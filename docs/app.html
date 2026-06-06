@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>SunTally — the app</title>
+<meta name="description" content="See your true solar ROI. Estimate from a quote, or import your utility bills. Free, open source, and your data never leaves your browser."/>
+<link rel="stylesheet" href="assets/styles.css"/>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js" integrity="sha384-o5uz97et3bErHvpKfD4Jz4n0JfhJDWABFuF4NP+iEEDxE1VwMWJ19QGR0lqFZnr6" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js" integrity="sha384-D/t0ZMqQW31H3az8ktEiNb39wyKnS82iFY52QPACM+IjKW3jDUhyIgh2PApRqJZs" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" integrity="sha384-vtjasyidUo0kW94K5MXDXntzOJpQgBKXmE7e2Ga4LG0skTTLeBi97eFAXsqewJjw" crossorigin="anonymous"></script>
+</head>
+<body>
+<nav class="nav"><div class="wrap">
+  <a class="brand" href="index.html"><span class="sun"></span>SunTally</a>
+  <a class="link" href="index.html#how">How it works</a>
+  <a class="link" href="index.html#privacy">Privacy</a>
+  <a class="link" href="https://github.com/suntally/suntally" target="_blank" rel="noopener">GitHub</a>
+  <span class="spacer"></span>
+  <a class="btn gold sm" href="index.html#support">♥ Support</a>
+</div></nav>
+
+<div class="wrap">
+  <div class="tabs" style="margin-top:22px">
+    <button id="tabEstimate" class="on">Estimate a system</button>
+    <button id="tabTrack">Analyze my ROI</button>
+  </div>
+
+  <!-- ===================== ESTIMATE ===================== -->
+  <div id="viewEstimate" class="app-shell">
+    <div class="panel-wrap"><aside class="panel-side">
+      <div class="group prefill">
+        <div class="gh">✨ Pre-fill from your documents <span class="info" tabindex="0" data-tip="Have a solar proposal, loan agreement, or utility/net-metering statement? Drop it here and we'll read the numbers for you. Files are parsed entirely in your browser — nothing is uploaded anywhere.">i</span></div>
+        <div class="gh-sub">Drop a proposal, contract, or utility statement and we'll try to fill these fields in. 100% in your browser — nothing leaves your device.</div>
+        <div class="dropzone" id="docDrop">
+          <div style="font-size:20px;margin-bottom:6px">📄</div>
+          <div><b>Drop a PDF or image</b><br>solar proposal · loan docs · net-metering</div>
+          <input id="docInput" type="file" accept=".pdf,image/*" class="hide">
+        </div>
+        <div id="docStatus"></div>
+        <div id="extractReview" class="ex-review hide"></div>
+      </div>
+
+      <div class="group">
+        <div class="gh">System &amp; cost</div>
+        <div class="field"><label>Gross system cost <span class="hint">before incentives</span><span class="info" tabindex="0" data-tip="The total price to buy and install the system, before any tax credits or rebates. On your solar proposal or contract this is the 'system price' or 'contract price.'">i</span></label><input id="grossCost" type="number" value="24000"></div>
+        <div class="field"><label>Incentives / tax credit<span class="info" tabindex="0" data-tip="Money that comes back to you and lowers the real cost — mainly the 30% federal tax credit (ITC), plus any state or utility rebates. We subtract this from the gross cost to get what you actually pay.">i</span></label><input id="incentives" type="number" value="7200"></div>
+        <div class="field"><label>System size <span class="hint">kW</span><span class="info" tabindex="0" data-tip="The maximum power all your panels can produce together, in kilowatts (kW DC). A typical home system is 5–12 kW. It's the headline number on your proposal, e.g. '8.2 kW.'">i</span></label><input id="systemKw" type="number" value="8" step="0.1"></div>
+        <div class="field"><label>Production factor <span class="hint">kWh per kW / year</span><span class="info" tabindex="0" data-tip="How many kilowatt-hours each kW of panels actually produces in a year where you live — it bakes in your sun, roof angle and shading. Typical US values are about 1,100–1,500. If your proposal lists an estimated annual production, enter that below instead and we'll use it directly.">i</span></label><input id="productionFactor" type="number" value="1300">
+          <div class="alt">≈ <span id="estAnnual"></span> kWh/yr at this size. Know the exact figure? ↓</div>
+        </div>
+        <div class="field"><label>Annual production <span class="hint">kWh/yr · optional</span><span class="info" tabindex="0" data-tip="If your proposal gives an estimated first-year production (kWh per year), enter it here and we'll use it directly instead of estimating from size × production factor. Leave blank to estimate.">i</span></label><input id="annualProduction" type="number" placeholder="from your proposal"></div>
+      </div>
+
+      <div class="group">
+        <div class="gh">Financing <span class="seg" id="finSeg"><button data-f="cash" class="on">Cash</button><button data-f="loan">Loan</button></span></div>
+        <div class="gh-sub">How you're paying for the system — pay cash up front, or finance it with a solar loan.</div>
+        <div id="loanFields" class="hide">
+          <div class="field inline">
+            <div><label>APR %<span class="info" tabindex="0" data-tip="The yearly interest rate on your solar loan, from your financing offer.">i</span></label><input id="loanApr" type="number" value="6.9" step="0.1"></div>
+            <div><label>Term (yrs)<span class="info" tabindex="0" data-tip="How many years you'll be paying off the loan.">i</span></label><input id="loanTermYears" type="number" value="15"></div>
+          </div>
+          <div class="field"><label>Down payment %<span class="info" tabindex="0" data-tip="Share of the cost you pay up front; the rest is financed by the loan.">i</span></label><input id="downPct" type="number" value="0"></div>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="gh">Production &amp; usage</div>
+        <div class="field"><label>Annual household usage <span class="hint">kWh / year</span><span class="info" tabindex="0" data-tip="How much electricity your home uses in a year. Add up the kWh from 12 months of bills, or find it on a yearly summary. An average US home uses about 10,000–11,000 kWh.">i</span></label><input id="annualUsageKwh" type="number" value="11000"></div>
+        <div class="field"><label>Self-consumption %<span class="info" tabindex="0" data-tip="On average, the share of your solar energy you use in the home as it's produced, versus exporting the extra to the grid. Homes without a battery are often 30–50%; with a battery, higher.">i</span></label><input id="selfConsumption" type="number" value="50">
+          <div class="alt">Average % of your solar you use at home vs. send to the grid.</div>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="gh">Rates &amp; assumptions</div>
+        <div class="field inline">
+          <div><label>Generation $/kWh<span class="info" tabindex="0" data-tip="What your utility charges to PRODUCE each kWh — the 'supply' or 'generation' part of your bill. Solar offsets this part. Find the per-kWh generation/supply rate on your electric bill.">i</span></label><input id="genRate" type="number" value="0.12" step="0.01"></div>
+          <div><label>Delivery $/kWh<span class="info" tabindex="0" data-tip="What your utility charges to DELIVER electricity to your home over the grid, per kWh — the 'delivery' or 'distribution' line on your bill. Important: net-metering agreements (a.k.a. interconnection agreements) vary and most do NOT net out delivery/distribution costs — only generation. So you often keep paying this even when solar covers your usage.">i</span></label><input id="deliveryPerKwh" type="number" value="0.05" step="0.01"></div>
+        </div>
+        <div class="field inline">
+          <div><label>Fixed fee $/mo<span class="info" tabindex="0" data-tip="A flat monthly charge you pay no matter how little electricity you use — often called a 'customer charge' or 'basic service charge.' Solar can't reduce it.">i</span></label><input id="fixedMonthly" type="number" value="25"></div>
+          <div><label>Export credit $/kWh<span class="info" tabindex="0" data-tip="What you're credited for each kWh of extra solar you send back to the grid, set by your net-metering agreement. Sometimes the full retail rate, sometimes lower (check your utility's NEM terms).">i</span></label><input id="exportRate" type="number" value="0.05" step="0.01"></div>
+        </div>
+        <div class="field inline">
+          <div><label>Utility inflation %/yr<span class="info" tabindex="0" data-tip="How fast electricity prices rise each year. We default to 3%, roughly the long-run US average for electricity — raise it if rates in your area climb faster.">i</span></label><input id="utilityInflation" type="number" value="3" step="0.1"></div>
+          <div><label>Degradation %/yr<span class="info" tabindex="0" data-tip="Panels slowly produce less as they age. We default to 0.5%/year, typical for modern panels — most warranties still guarantee about 85–90% of original output at 25 years.">i</span></label><input id="degradation" type="number" value="0.5" step="0.1"></div>
+        </div>
+        <div class="field"><label>Analysis horizon <span class="hint">years</span><span class="info" tabindex="0" data-tip="How many years to project into the future. 25 years is standard, matching typical panel performance warranties.">i</span></label><input id="years" type="number" value="25"></div>
+      </div>
+    </aside></div>
+
+    <main>
+      <div class="callout warn">These are projections from your assumptions — illustrative, not financial advice. Net-metering rules and tariffs vary by utility; tweak the inputs to match your quote.</div>
+      <div class="callout">🔋 <b>Solar + net metering only.</b> This version doesn't yet model on-site <b>battery storage</b> — which can shift your self-consumption, savings, and payback meaningfully. Battery modeling is on the roadmap. For now, a rough proxy: raise the <b>self-consumption %</b> to reflect a battery storing daytime solar for evening use.</div>
+      <div class="kpis" id="eKpis"></div>
+      <div class="chart-card"><div class="ct">Cumulative net cashflow</div><div class="cd">Your money over time after the upfront cost (and loan payments). Crossing $0 = payback.</div><div class="chart tall" id="e_cum"></div></div>
+      <div class="grid cols-2">
+        <div class="chart-card"><div class="ct">Annual savings vs. loan payments</div><div class="cd">Green = utility savings that year; red = financing cost.</div><div class="chart" id="e_sav"></div></div>
+        <div class="chart-card"><div class="ct">With vs. without solar (cumulative)</div><div class="cd">Total dollars out the door each way. Lower wins.</div><div class="chart" id="e_vs"></div></div>
+      </div>
+      <div class="chart-card"><div class="ct">Your future bill: generation vs. delivery</div><div class="cd">Solar offsets generation — delivery &amp; fixed fees you pay regardless. Why the bill never hits zero.</div><div class="chart" id="e_bill"></div></div>
+    </main>
+  </div>
+
+  <!-- ===================== TRACK ===================== -->
+  <div id="viewTrack" class="app-shell hide">
+    <div class="panel-wrap"><aside class="panel-side">
+      <div class="group">
+        <div class="gh">Your data <span class="note" id="rowCount"></span></div>
+        <div class="dropzone" id="dropzone">
+          <div style="font-size:20px;margin-bottom:6px">📄</div>
+          <div><b>Drop your utility bills</b><br>PDF or image · or a CSV / Excel export</div>
+          <input id="fileInput" type="file" accept=".csv,.xlsx,.xls,.pdf,image/*" multiple class="hide">
+        </div>
+        <div id="dropStatus"></div>
+        <div class="row-between" style="margin-top:12px">
+          <span class="muted-link" id="loadSample">Load sample data</span>
+          <span class="muted-link" id="dlTemplate">Download template ↓</span>
+        </div>
+        <div class="row-between" style="margin-top:8px">
+          <span class="muted-link" id="clearData">Clear all</span>
+          <span><span class="muted-link" id="removeRow">− Remove last</span> &nbsp; <span class="muted-link" id="addRow">+ Add month</span></span>
+        </div>
+        <div class="note" style="margin-top:10px" id="dataHint"></div>
+      </div>
+      <div class="group">
+        <div class="gh">Compared to no solar <span class="info" tabindex="0" data-tip="To show your savings, we estimate what your bills would have been with no solar. These two settings control that 'without solar' comparison.">i</span></div>
+        <div class="gh-sub">What we assume you'd be paying if you'd never gone solar.</div>
+        <div class="field"><label>Assumed retail rate $/kWh<span class="info" tabindex="0" data-tip="The price per kWh you'd pay your utility if you had no solar — used to estimate what your bills would have been. Leave at 0 (auto) and we'll use your own blended energy rate from the data you loaded.">i</span></label><input id="noPanelRate" type="number" value="0" step="0.01" placeholder="auto"></div>
+        <div class="field"><label>Assumed fixed fee $/mo<span class="info" tabindex="0" data-tip="A flat monthly charge you'd pay even without solar — the customer or basic service charge. Added to the no-solar comparison so it's apples-to-apples.">i</span></label><input id="trackFixed" type="number" value="0"></div>
+        <div class="note">Leave rate at <b>0</b> to auto-use your own blended (generation + delivery) rate per kWh.</div>
+      </div>
+      <div class="group">
+        <div class="gh">Export your data <span class="info" tabindex="0" data-tip="Download the bill rows you've imported or edited as a file you can keep. JSON preserves it exactly for re-importing later; CSV opens in Excel/Sheets. Everything stays on your device — this is just a local download.">i</span></div>
+        <div class="gh-sub">Save a backup of your bill data (re-import the JSON anytime, or open the CSV in a spreadsheet).</div>
+        <div class="row-between">
+          <button class="btn sm" id="exportJSON">Export JSON</button>
+          <button class="btn sm" id="exportCSV">Export CSV</button>
+        </div>
+      </div>
+    </aside></div>
+
+    <main>
+      <div id="trackEmpty" class="callout">No data yet. Drop your <b>utility-bill PDFs</b> (we'll read the numbers), import a <b>CSV/Excel</b> export, click <b>Load sample data</b> to explore, or <b>+ Add month</b> to enter rows by hand. <a href="#" id="emptyTemplate">Download the template</a> to see the columns.</div>
+      <div id="trackBody" class="hide">
+        <div class="kpis" id="tKpis"></div>
+        <div class="chart-card"><div class="ct">Cumulative net position</div><div class="cd">Running total of monthly savings vs. a no-solar scenario. Crossing $0 = break-even.</div><div class="chart tall" id="t_cum"></div></div>
+        <div class="grid cols-2">
+          <div class="chart-card"><div class="ct">Monthly savings</div><div class="cd">Green = saved that month; red = paid more than without solar. Hover for the breakdown.</div><div class="chart" id="t_sav"></div></div>
+          <div class="chart-card"><div class="ct">Production vs. usage</div><div class="cd">kWh produced vs. consumed, with the share covered by solar.</div><div class="chart" id="t_energy"></div></div>
+        </div>
+        <div class="chart-card"><div class="ct">Your bill: delivery/admin vs. generation</div><div class="cd">How much you pay the utility as a delivery company vs. a generation company.</div><div class="chart" id="t_bill"></div></div>
+        <div class="grid cols-2">
+          <div class="chart-card"><div class="ct">Effective rate ($/kWh used)</div><div class="cd">All-in utility cost per kWh you actually consumed.</div><div class="chart" id="t_rate"></div></div>
+          <div class="chart-card"><div class="ct">Delivery share of charges</div><div class="cd">Of every dollar of energy charges, how much is delivery/admin.</div><div class="chart" id="t_share"></div></div>
+        </div>
+        <div class="chart-card">
+          <div class="row-between" style="margin-bottom:10px"><div class="ct">Your data <span class="note">click any cell to edit</span></div></div>
+          <div class="dt-wrap"><table class="dt" id="dataTable"></table></div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div id="chartModal" class="modal hide">
+  <div class="modal-card">
+    <div class="modal-head"><span id="modalTitle"></span><button id="modalClose" aria-label="Close">✕</button></div>
+    <div id="expandChart" class="modal-chart"></div>
+  </div>
+</div>
+
+<footer><div class="wrap">
+  <span>SunTally — free &amp; open source · MIT · your data stays on your device</span>
+  <span><a href="index.html">Home</a> · <a href="https://github.com/suntally/suntally" target="_blank" rel="noopener">Source</a> · <a href="index.html#support">Support the project</a></span>
+</div></footer>
+
+<script src="assets/model.js"></script>
+<script src="assets/store.js"></script>
+<script src="assets/charts.js"></script>
+<script src="assets/extract.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const fUSD = SLCharts.fUSD, fK = SLCharts.fK, C = SLCharts.C;
+// Escape any untrusted text (e.g. parsed from an uploaded file) before inserting as HTML.
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const debounce = (fn, ms = 120) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
+
+/* ---------- tabs ---------- */
+function showTab(which) {
+  const est = which === 'estimate';
+  $('viewEstimate').classList.toggle('hide', !est);
+  $('viewTrack').classList.toggle('hide', est);
+  $('tabEstimate').classList.toggle('on', est);
+  $('tabTrack').classList.toggle('on', !est);
+  setTimeout(() => SLCharts.resizeAll(), 30);
+  if (est) renderEstimate(); else renderTrack();
+  setTimeout(updateScrollFades, 60);
+}
+$('tabEstimate').onclick = () => showTab('estimate');
+$('tabTrack').onclick = () => showTab('track');
+
+/* ---------- ESTIMATE ---------- */
+let finance = 'cash';
+document.querySelectorAll('#finSeg button').forEach(b => b.onclick = () => {
+  finance = b.dataset.f;
+  document.querySelectorAll('#finSeg button').forEach(x => x.classList.toggle('on', x.dataset.f === finance));
+  $('loanFields').classList.toggle('hide', finance !== 'loan');
+  renderEstimate();
+});
+const eInputs = ['grossCost','incentives','systemKw','productionFactor','annualProduction','loanApr','loanTermYears','downPct',
+  'annualUsageKwh','selfConsumption','genRate','deliveryPerKwh','fixedMonthly','exportRate','utilityInflation','degradation','years'];
+eInputs.forEach(id => $(id).addEventListener('input', debounce(renderEstimate)));
+
+function readEstimate() {
+  const v = id => parseFloat($(id).value) || 0;
+  return {
+    grossCost: v('grossCost'), incentives: v('incentives'), systemKw: v('systemKw'), productionFactor: v('productionFactor'),
+    annualProduction: v('annualProduction'),
+    finance, loanApr: v('loanApr') / 100, loanTermYears: v('loanTermYears'), downPct: v('downPct') / 100,
+    annualUsageKwh: v('annualUsageKwh'), selfConsumption: v('selfConsumption') / 100,
+    genRate: v('genRate'), deliveryPerKwh: v('deliveryPerKwh'), fixedMonthly: v('fixedMonthly'), exportRate: v('exportRate'),
+    utilityInflation: v('utilityInflation') / 100, degradation: v('degradation') / 100, years: v('years'),
+  };
+}
+function renderEstimate() {
+  const est = (parseFloat($('systemKw').value) || 0) * (parseFloat($('productionFactor').value) || 0);
+  $('estAnnual').textContent = Math.round(est).toLocaleString();
+  const res = SL.projectEstimate(readEstimate());
+  const s = res.summary;
+  const pay = s.payback ? s.payback.toFixed(1) + ' yrs' : '> ' + s.years + ' yrs';
+  $('eKpis').innerHTML = [
+    ['Payback', pay, s.payback ? 'break-even point' : 'no payback in horizon', s.payback ? C.green : C.red],
+    ['Net cost', fUSD(s.netCost), `${fUSD(s.grossCost)} − ${fUSD(s.incentives)} incentives`, C.gold],
+    [`${s.years}-yr net`, fUSD(s.lifetimeNet), `${(s.roiPct*100).toFixed(0)}% return on cost`, s.lifetimeNet >= 0 ? C.green : C.red],
+    ['Year-1 savings', fUSD(s.avgYr1Savings), `vs. no-solar bill`, C.teal],
+  ].map(k => kpi(k)).join('');
+  SLCharts.renderEstimate(res);
+  updateScrollFades();
+}
+
+/* ---------- TRACK ---------- */
+let bills = SLStore.load() || [];
+function persist() { SLStore.save(bills); updateRowCount(); }
+function updateRowCount() { $('rowCount').textContent = bills.length ? `${bills.length} months` : ''; }
+function updateHint() {
+  $('dataHint').innerHTML = bills.length
+    ? `${bills.length} months loaded. Edit any cell below, <b>Remove last</b> / <b>Add month</b>, or <b>Clear all</b> to start over.`
+    : '';
+}
+
+$('loadSample').onclick = () => { bills = SLStore.sample(); persist(); renderTrack(); setDropStatus('Loaded 36 months of <b>sample</b> data (example only — Clear all and add your own).'); };
+$('clearData').onclick = () => { if (!bills.length || confirm('Clear all loaded bill data from this browser?')) { bills = []; SLStore.clear(); setDropStatus(''); renderTrack(); } };
+$('addRow').onclick = () => {
+  const last = bills[bills.length - 1];
+  const m = last ? nextMonth(last.month) : new Date().toISOString().slice(0, 7);
+  bills.push({ month: m, produced: 0, delivered: 0, sentback: 0, billed: 0, generationCharge: 0, deliveryCharge: 0, panelPayment: 0 });
+  persist(); renderTrack();
+};
+$('removeRow').onclick = () => { if (bills.length) { bills.pop(); persist(); renderTrack(); } };
+function nextMonth(m) { const [y, mo] = m.split('-').map(Number); const d = new Date(y, mo, 1); return d.toISOString().slice(0, 7); }
+
+['noPanelRate','trackFixed'].forEach(id => $(id).addEventListener('input', debounce(renderTrack)));
+
+// downloads
+function download(name, text, type = 'text/plain') {
+  const blob = new Blob([text], { type });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 500);
+}
+$('dlTemplate').onclick = () => download('suntally-template.csv', SLStore.TEMPLATE, 'text/csv');
+$('emptyTemplate').onclick = e => { e.preventDefault(); download('suntally-template.csv', SLStore.TEMPLATE, 'text/csv'); };
+$('exportJSON').onclick = () => download('suntally-data.json', JSON.stringify(bills, null, 2), 'application/json');
+$('exportCSV').onclick = () => download('suntally-data.csv', SLStore.toCSV(bills), 'text/csv');
+
+// file upload — CSV/Excel (tabular, replaces) or utility-bill PDFs/images (extracted, merged)
+const dz = $('dropzone'), fi = $('fileInput'), dropStatus = $('dropStatus');
+function setDropStatus(msg, pct) {
+  dropStatus.innerHTML = msg ? `${msg}${pct != null ? `<div class="bar"><i style="width:${Math.round(pct*100)}%"></i></div>` : ''}` : '';
+}
+dz.onclick = () => fi.click();
+dz.ondragover = e => { e.preventDefault(); dz.classList.add('drag'); };
+dz.ondragleave = () => dz.classList.remove('drag');
+dz.ondrop = e => { e.preventDefault(); dz.classList.remove('drag'); if (e.dataTransfer.files.length) handleFiles(e.dataTransfer.files); };
+fi.onchange = () => { if (fi.files.length) handleFiles(fi.files); };
+
+const readText = f => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsText(f); });
+const readBuf = f => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsArrayBuffer(f); });
+
+function mergeBill(row) {
+  if (!row || !row.month) return false;
+  const i = bills.findIndex(b => b.month === row.month);
+  if (i >= 0) { Object.keys(row).forEach(k => { if (k !== 'month' && row[k]) bills[i][k] = row[k]; }); }
+  else bills.push(row);
+  return true;
+}
+
+async function handleFiles(fileList) {
+  const files = [...fileList];
+  const tabular = files.filter(f => /\.(csv|xlsx|xls)$/i.test(f.name));
+  const docs = files.filter(f => /\.pdf$/i.test(f.name) || /^image\//.test(f.type) || /\.(png|jpe?g)$/i.test(f.name));
+
+  try {
+    // tabular files replace the dataset
+    for (const f of tabular) {
+      const isCSV = /\.csv$/i.test(f.name);
+      const parsed = isCSV ? SLStore.parseCSV(await readText(f)) : SLStore.parseXLSX(await readBuf(f));
+      if (parsed.rows.length) { bills = parsed.rows; setDropStatus(`Imported ${parsed.rows.length} rows from <b>${f.name}</b>.`); }
+      else setDropStatus(`No rows recognized in <b>${f.name}</b> — check it has a header row (see template).`);
+    }
+    // bill PDFs / images get parsed into rows and merged
+    let added = 0;
+    for (let i = 0; i < docs.length; i++) {
+      const f = docs[i];
+      setDropStatus(`Reading <b>${f.name}</b> in your browser…${docs.length > 1 ? ` (${i + 1}/${docs.length})` : ''}`);
+      const { text } = await SLExtract.extractText(f, prog => {
+        if (prog && prog.status === 'recognizing text') setDropStatus(`Running OCR on <b>${f.name}</b> (stays local)…`, prog.progress);
+        else if (prog && prog.status === 'ocr') setDropStatus(`No text layer in <b>${f.name}</b> — running OCR (stays local)…`);
+      });
+      const row = SLExtract.extractBillRow(text || '');
+      if (mergeBill(row)) added++;
+    }
+    if (docs.length) {
+      bills.sort((a, b) => a.month < b.month ? -1 : a.month > b.month ? 1 : 0);
+      setDropStatus(added ? `Read ${added} bill${added > 1 ? 's' : ''} into your data — review the values in the table below and fix anything we misread.` : `Couldn't confidently read those bills. Add the months by hand, or import a CSV.`);
+    }
+    persist(); renderTrack();
+  } catch (err) {
+    setDropStatus('Could not read a file: ' + (err.message || err));
+  }
+}
+
+function readAssumptions() {
+  return { noPanelRate: parseFloat($('noPanelRate').value) || 0, fixedMonthly: parseFloat($('trackFixed').value) || 0 };
+}
+function renderTrack() {
+  updateRowCount(); updateHint();
+  const has = bills.length > 0;
+  $('trackEmpty').classList.toggle('hide', has);
+  $('trackBody').classList.toggle('hide', !has);
+  if (!has) return;
+  const res = SL.computeTrack(bills, readAssumptions());
+  const s = res.summary;
+  $('tKpis').innerHTML = [
+    ['Energy produced', fK(s.produced), `${s.n} billing months`, C.gold],
+    ['Consumption covered', (s.pctCovered*100).toFixed(0) + '%', `${(s.selfConsumed*100).toFixed(0)}% used directly`, C.green],
+    ['Net position', fUSD(s.cumSavings), s.cumSavings >= 0 ? 'ahead of no-solar' : 'behind no-solar', s.cumSavings >= 0 ? C.green : C.red],
+    ['Delivery share', (s.deliveryShare*100).toFixed(0) + '%', `of energy charges`, C.teal],
+  ].map(k => kpi(k)).join('');
+  SLCharts.renderTrack(res);
+  renderTable();
+  updateScrollFades();
+}
+
+const EDIT = [['produced','Produced'],['delivered','Delivered'],['sentback','Sent back'],['generationCharge','Gen $'],['deliveryCharge','Deliv $'],['panelPayment','Panel $']];
+function renderTable() {
+  const res = SL.computeTrack(bills, readAssumptions());
+  const head = '<tr><th>Month</th>' + EDIT.map(c => `<th>${c[1]}</th>`).join('') + '<th>Usage</th><th>Savings</th><th></th></tr>';
+  const body = bills.map((r, i) => {
+    const cr = res.rows.find(x => x.month === r.month) || {};
+    const cells = EDIT.map(c => `<td contenteditable data-i="${i}" data-k="${c[0]}">${esc(r[c[0]])}</td>`).join('');
+    return `<tr><td contenteditable data-i="${i}" data-k="month">${esc(r.month)}</td>${cells}` +
+      `<td>${Math.round(cr.usage || 0)}</td>` +
+      `<td class="${(cr.savings||0)>=0?'pos':'neg'}">${fUSD(cr.savings || 0)}</td>` +
+      `<td><span class="muted-link" data-del="${i}">✕</span></td></tr>`;
+  }).join('');
+  $('dataTable').innerHTML = head + body;
+}
+// edit + delete via delegation
+$('dataTable').addEventListener('blur', e => {
+  const td = e.target; if (!td.dataset || td.dataset.i == null) return;
+  const i = +td.dataset.i, k = td.dataset.k, val = td.textContent.trim();
+  if (k === 'month') bills[i].month = SLStore.normalizeMonth(val);
+  else bills[i][k] = parseFloat(val.replace(/[$,]/g, '')) || 0;
+  persist(); renderTrackChartsOnly();
+}, true);
+$('dataTable').addEventListener('click', e => {
+  if (e.target.dataset && e.target.dataset.del != null) { bills.splice(+e.target.dataset.del, 1); persist(); renderTrack(); }
+});
+function renderTrackChartsOnly() {
+  const res = SL.computeTrack(bills, readAssumptions()); SLCharts.renderTrack(res);
+  const s = res.summary;
+  $('tKpis').innerHTML = [
+    ['Energy produced', fK(s.produced), `${s.n} billing months`, C.gold],
+    ['Consumption covered', (s.pctCovered*100).toFixed(0) + '%', `${(s.selfConsumed*100).toFixed(0)}% used directly`, C.green],
+    ['Net position', fUSD(s.cumSavings), s.cumSavings >= 0 ? 'ahead of no-solar' : 'behind no-solar', s.cumSavings >= 0 ? C.green : C.red],
+    ['Delivery share', (s.deliveryShare*100).toFixed(0) + '%', `of energy charges`, C.teal],
+  ].map(k => kpi(k)).join('');
+}
+
+function kpi([l, v, s, c]) {
+  return `<div class="kpi"><div class="kl"><span class="dot" style="background:${c}"></span>${l}</div><div class="kv">${v}</div><div class="ks">${s}</div></div>`;
+}
+
+/* ---------- tooltips (floating, not clipped by overflow containers) ---------- */
+(function initTips() {
+  let pop = null, cur = null;
+  function show(el) {
+    const tip = el.getAttribute('data-tip'); if (!tip) return;
+    cur = el;
+    pop = document.createElement('div'); pop.className = 'tip-pop'; pop.innerHTML = tip;
+    document.body.appendChild(pop);
+    const r = el.getBoundingClientRect(), tw = pop.offsetWidth, th = pop.offsetHeight;
+    let left = Math.max(8, Math.min(r.left + r.width / 2 - tw / 2, innerWidth - tw - 8));
+    let top = r.top - th - 8; if (top < 8) top = r.bottom + 8;
+    pop.style.left = left + 'px'; pop.style.top = top + 'px';
+    requestAnimationFrame(() => pop && pop.classList.add('in'));
+  }
+  function hide() { if (pop) { pop.remove(); pop = null; } cur = null; }
+  document.addEventListener('mouseover', e => { const t = e.target.closest('[data-tip]'); if (t && t !== cur) { hide(); show(t); } });
+  document.addEventListener('mouseout', e => { const t = e.target.closest('[data-tip]'); if (t && t === cur && !t.contains(e.relatedTarget)) hide(); });
+  document.addEventListener('focusin', e => { const t = e.target.closest('[data-tip]'); if (t) { hide(); show(t); } });
+  document.addEventListener('focusout', hide);
+  window.addEventListener('scroll', hide, true);
+})();
+
+/* ---------- document pre-fill (extract.js) ---------- */
+const APPLY_MAP = {
+  grossCost: { id: 'grossCost', label: 'Gross system cost', fmt: v => fUSD(v) },
+  incentives: { id: 'incentives', label: 'Incentives / tax credit', fmt: v => fUSD(v) },
+  systemKw: { id: 'systemKw', label: 'System size', fmt: v => v + ' kW' },
+  annualProduction: { id: 'annualProduction', label: 'Annual production', fmt: v => Math.round(v).toLocaleString() + ' kWh/yr' },
+  annualUsageKwh: { id: 'annualUsageKwh', label: 'Annual household usage', fmt: v => Math.round(v).toLocaleString() + ' kWh/yr' },
+  loanApr: { id: 'loanApr', label: 'Loan APR', fmt: v => v + '%', loan: true },
+  loanTermYears: { id: 'loanTermYears', label: 'Loan term', fmt: v => v + ' yrs', loan: true },
+  genRate: { id: 'genRate', label: 'Generation rate', fmt: v => '$' + v + '/kWh' },
+  deliveryPerKwh: { id: 'deliveryPerKwh', label: 'Delivery rate', fmt: v => '$' + v + '/kWh' },
+  fixedMonthly: { id: 'fixedMonthly', label: 'Fixed fee', fmt: v => fUSD(v) + '/mo' },
+  exportRate: { id: 'exportRate', label: 'Export credit', fmt: v => '$' + v + '/kWh' },
+};
+const docDrop = $('docDrop'), docInput = $('docInput'), docStatus = $('docStatus'), exReview = $('extractReview');
+docDrop.onclick = () => docInput.click();
+docDrop.ondragover = e => { e.preventDefault(); docDrop.classList.add('drag'); };
+docDrop.ondragleave = () => docDrop.classList.remove('drag');
+docDrop.ondrop = e => { e.preventDefault(); docDrop.classList.remove('drag'); if (e.dataTransfer.files[0]) handleDoc(e.dataTransfer.files[0]); };
+docInput.onchange = () => { if (docInput.files[0]) handleDoc(docInput.files[0]); };
+
+function setStatus(msg, pct) {
+  docStatus.innerHTML = msg ? `${msg}${pct != null ? `<div class="bar"><i style="width:${Math.round(pct*100)}%"></i></div>` : ''}` : '';
+}
+async function handleDoc(file) {
+  exReview.classList.add('hide'); exReview.innerHTML = '';
+  setStatus('Reading <b>' + file.name + '</b> in your browser…');
+  try {
+    const { text, method } = await SLExtract.extractText(file, prog => {
+      if (prog && prog.status === 'recognizing text') setStatus('Running OCR (stays local)…', prog.progress);
+      else if (prog && prog.status === 'ocr') setStatus('No text layer found — running OCR (stays local)…');
+    });
+    const found = SLExtract.extractFields(text || '');
+    if (!found.length) { setStatus('Couldn\'t confidently read fields from that document. Try a clearer PDF, or enter values by hand.'); return; }
+    setStatus(`Read ${found.length} value${found.length > 1 ? 's' : ''} (${method.replace('-', ' ')}). Review and apply:`);
+    renderReview(found);
+  } catch (err) {
+    setStatus('Could not read that file (' + (err.message || err) + '). PDF or image works best.');
+  }
+}
+function renderReview(found) {
+  const rows = found.filter(f => APPLY_MAP[f.key]).map(f => {
+    const m = APPLY_MAP[f.key];
+    return `<div class="ex-row"><div><div class="exl">${m.label}</div><div class="exs" title="${esc(f.snippet||'')}">…${esc((f.snippet||'').slice(0,46))}…</div></div>` +
+      `<div><span class="exv">${m.fmt(f.value)}</span><button class="ex-apply" data-key="${esc(f.key)}" data-val="${f.value}">Apply</button></div></div>`;
+  }).join('');
+  exReview.innerHTML = `<div class="exh"><b>Found in your document</b><button class="btn sm" id="applyAll">Apply all</button></div>${rows}` +
+    `<div class="note" style="margin-top:8px">Best-effort read — please double-check each value against your document.</div>`;
+  exReview.classList.remove('hide');
+  exReview.querySelectorAll('.ex-apply').forEach(b => b.onclick = () => applyOne(b.dataset.key, parseFloat(b.dataset.val), b));
+  $('applyAll').onclick = () => { exReview.querySelectorAll('.ex-apply:not(.ex-applied)').forEach(b => applyOne(b.dataset.key, parseFloat(b.dataset.val), b)); };
+}
+function applyOne(key, val, btn) {
+  const m = APPLY_MAP[key]; if (!m) return;
+  $(m.id).value = val;
+  if (m.loan && finance !== 'loan') { finance = 'loan'; document.querySelectorAll('#finSeg button').forEach(x => x.classList.toggle('on', x.dataset.f === 'loan')); $('loanFields').classList.remove('hide'); }
+  if (btn) { btn.textContent = 'Applied ✓'; btn.classList.add('ex-applied'); btn.onclick = null; }
+  renderEstimate();
+}
+
+/* ---------- expand charts to a modal ---------- */
+function initExpandButtons() {
+  document.querySelectorAll('.chart-card').forEach(card => {
+    const chartEl = card.querySelector('.chart'); const titleEl = card.querySelector('.ct');
+    if (!chartEl || !chartEl.id || card.querySelector('.expand-btn')) return;
+    const btn = document.createElement('button');
+    btn.className = 'expand-btn'; btn.title = 'Expand'; btn.setAttribute('aria-label', 'Expand chart'); btn.innerHTML = '⤢';
+    btn.dataset.chart = chartEl.id; btn.dataset.title = titleEl ? titleEl.textContent : '';
+    card.style.position = 'relative'; card.appendChild(btn);
+  });
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('.expand-btn'); if (!b) return;
+  $('modalTitle').textContent = b.dataset.title;
+  $('chartModal').classList.remove('hide');
+  SLCharts.expand(b.dataset.chart);
+});
+function closeModal() { $('chartModal').classList.add('hide'); SLCharts.collapse(); }
+$('modalClose').onclick = closeModal;
+$('chartModal').onclick = e => { if (e.target.id === 'chartModal') closeModal(); };
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('chartModal').classList.contains('hide')) closeModal(); });
+
+/* ---------- scroll affordance on the input panels ---------- */
+function updateScrollFades() {
+  document.querySelectorAll('.panel-side').forEach(p => {
+    const more = p.scrollHeight - p.scrollTop - p.clientHeight > 8;
+    p.classList.toggle('fade-bottom', more);
+  });
+}
+function initScrollFades() {
+  document.querySelectorAll('.panel-side').forEach(p => p.addEventListener('scroll', updateScrollFades, { passive: true }));
+  window.addEventListener('resize', updateScrollFades);
+}
+
+/* ---------- boot ---------- */
+initExpandButtons();
+initScrollFades();
+const startTab = location.hash === '#track' ? 'track' : 'estimate';
+showTab(startTab);
+updateRowCount();
+</script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+month,produced_kwh,delivered_kwh,sent_back_kwh,billed_kwh,generation_charge,delivery_charge,panel_payment
+2024-01,256,1009,116,893,46.26,68.09,0
+2024-02,480,690,240,450,22.40,64.47,0
+2024-03,673,885,212,673,17.20,39.90,0

@@ -1,0 +1,40 @@
+name: Deploy to Vercel (production)
+
+# Auto-deploy SunTally to Vercel on every push to main.
+# Requires repo secret VERCEL_TOKEN (a Vercel access token). The project/org IDs below
+# are not secret. The Vercel project's Root Directory is set to docs/, so only the site
+# is built and served.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - '.github/workflows/deploy.yml'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vercel-production
+  cancel-in-progress: true
+
+env:
+  VERCEL_ORG_ID: team_mAke8EJRVr00oL7mCmW3MGKJ
+  VERCEL_PROJECT_ID: prj_ZCA1e5CRAUbKtvYKB11kv75aAtfT
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+      - name: Deploy to production
+        run: vercel deploy --prod --yes --token="$VERCEL_TOKEN"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}

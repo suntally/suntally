@@ -1,0 +1,4 @@
+# GitHub "Sponsor" button config. Fill in the handles you create at go-live,
+# then remove any line you don't use (empty values render a broken link).
+ko_fi: suntally                  # https://ko-fi.com/suntally  — one-time tips
+github: [hutter-ai]                 # https://github.com/sponsors/hutter-ai  (optional)
