@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>The 7-year solar experiment — why I built SunTally</title>
+<meta name="description" content="I tracked every home solar bill for 7 years to answer one question: is it actually paying off? Here's what the numbers showed — and why I turned it into a free tool."/>
+<link rel="canonical" href="https://suntally.com/story"/>
+<meta name="theme-color" content="#0b0f17"/>
+<meta property="og:type" content="article"/>
+<meta property="og:site_name" content="SunTally"/>
+<meta property="og:url" content="https://suntally.com/story"/>
+<meta property="og:title" content="The 7-year solar experiment — why I built SunTally"/>
+<meta property="og:description" content="I tracked every solar bill for 7 years. Here's what the numbers actually showed."/>
+<meta property="og:image" content="https://suntally.com/assets/og.png"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://suntally.com/assets/og.png"/>
+<link rel="stylesheet" href="assets/styles.css"/>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+{"@type":"BreadcrumbList","itemListElement":[
+ {"@type":"ListItem","position":1,"name":"Home","item":"https://suntally.com/"},
+ {"@type":"ListItem","position":2,"name":"The 7-year experiment","item":"https://suntally.com/story"}]},
+{"@type":"Article","headline":"The 7-year solar experiment — why I built SunTally","description":"A homeowner tracked every solar bill for 7 years to find out if solar was actually paying off, and turned the analysis into a free, open-source tool.","image":"https://suntally.com/assets/og.png","author":{"@type":"Organization","name":"SunTally"},"publisher":{"@type":"Organization","name":"SunTally","logo":{"@type":"ImageObject","url":"https://suntally.com/assets/og.png"}},"mainEntityOfPage":"https://suntally.com/story"}]}
+</script>
+</head>
+<body>
+<nav class="nav"><div class="wrap">
+  <a class="brand" href="./"><span class="sun"></span>SunTally</a>
+  <a class="link" href="#how" onclick="location.href='./#how';return false;">How it works</a>
+  <a class="link" href="learn/">Learn</a>
+  <a class="link" href="#privacy" onclick="location.href='./#privacy';return false;">Privacy</a>
+  <a class="link" href="https://github.com/suntally/suntally" target="_blank" rel="noopener">GitHub</a>
+  <span class="spacer"></span>
+  <a class="btn gold sm" href="app">Open the app →</a>
+</div></nav>
+
+<article class="article">
+  <div class="crumbs"><a href="./">Home</a> · The 7-year experiment</div>
+  <h1>The 7-year solar experiment</h1>
+  <p class="lede">I put solar on my house in 2019 and couldn't get a straight answer to one question: <em>is this actually paying off?</em> So I tracked every bill for 7 years. Here's what I learned — and why I turned it into a free tool.</p>
+  <p class="meta">Why SunTally exists</p>
+
+  <h2>The question nobody would answer</h2>
+  <p>At signing, the installer hands you a single, confident payback number. Then you're on your own. The monthly utility bill is no help — it bundles everything into one figure and obscures what solar is actually doing. So I started a spreadsheet: every month, the kWh my panels produced, what I pulled from the grid, what I sent back, and exactly what I was charged for each.</p>
+
+  <h2>What the numbers actually showed</h2>
+  <p>A few things surprised me:</p>
+  <ul>
+    <li><strong>The bill never went to zero</strong> — even in great solar months — because solar only offsets generation, while delivery and fixed fees roll on. Across the whole dataset, a large share of my energy charges were delivery/fixed, not generation. (<a href="learn/why-solar-doesnt-zero-your-bill">More on that here.</a>)</li>
+    <li><strong>"Payback" wasn't one number.</strong> Depending on what you assume you'd have paid without panels, my system looked either comfortably ahead or still behind. The honest answer was "it depends — here are both framings."</li>
+    <li><strong>Seasonality and one-off events</strong> (a production gap, a loan payoff) swung individual months hard. You only see the truth by looking at the whole trend, not a snapshot.</li>
+  </ul>
+
+  <blockquote>The spreadsheet didn't tell me solar was great or terrible. It told me the truth, which is more useful than either sales pitch.</blockquote>
+
+  <h2>Why I made it a tool</h2>
+  <p>Every solar calculator I found was a sales instrument — built to make the number look good. I wanted the opposite: something that would honestly tell you when a system <em>isn't</em> worth it, that you could run on your own bills, and that didn't harvest your data. So I rebuilt my spreadsheet as SunTally: a free, open-source calculator that runs entirely in your browser. Your bills never leave your device — there's no server to send them to.</p>
+  <p>It does two things: project payback from a quote (for people considering solar), and build a real dashboard from your actual bills (for people who already have it and want the truth).</p>
+
+  <div class="cta-box">
+    <h3>Run your own numbers</h3>
+    <p>Estimate from a quote, or drop in your bills. Free, open source, private.</p>
+    <a class="btn gold" href="app">Open the calculator →</a>
+  </div>
+
+  <div class="next-reads">
+    <a class="card learn-card" href="learn/why-solar-doesnt-zero-your-bill"><h3>Why solar doesn't zero your bill →</h3><p>The delivery-fee floor I kept hitting.</p></a>
+    <a class="card learn-card" href="learn/is-solar-worth-it"><h3>Is solar actually worth it? →</h3><p>How to judge a quote honestly.</p></a>
+  </div>
+</article>
+
+<footer><div class="wrap">
+  <span>SunTally — free &amp; open source · MIT · your data stays on your device</span>
+  <span><a href="app">Open the app</a> · <a href="https://github.com/suntally/suntally" target="_blank" rel="noopener">GitHub</a> · <a href="#support" onclick="location.href='./#support';return false;">Support</a></span>
+</div></footer>
+</body>
+</html>

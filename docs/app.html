@@ -3,9 +3,22 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>SunTally — the app</title>
-<meta name="description" content="See your true solar ROI. Estimate from a quote, or import your utility bills. Free, open source, and your data never leaves your browser."/>
+<title>Solar payback calculator — SunTally</title>
+<meta name="description" content="Free solar payback & ROI calculator. Estimate from a quote, or import your utility bills to see real savings. Runs in your browser; your data never leaves your device."/>
+<link rel="canonical" href="https://suntally.com/app"/>
+<meta name="theme-color" content="#0b0f17"/>
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="SunTally"/>
+<meta property="og:url" content="https://suntally.com/app"/>
+<meta property="og:title" content="Solar payback calculator — SunTally"/>
+<meta property="og:description" content="Estimate solar payback from a quote, or analyze your real utility bills. Free, in your browser."/>
+<meta property="og:image" content="https://suntally.com/assets/og.png"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://suntally.com/assets/og.png"/>
 <link rel="stylesheet" href="assets/styles.css"/>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"SunTally — Solar ROI Calculator","url":"https://suntally.com/app","applicationCategory":"FinanceApplication","operatingSystem":"Web browser","browserRequirements":"Requires JavaScript","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Estimate solar payback from a quote, or analyze your utility bills to see true solar ROI — payback year, lifetime net, and the delivery-vs-generation split of your bill. Entirely in-browser; no data leaves your device.","publisher":{"@type":"Organization","name":"SunTally","url":"https://suntally.com/"}}
+</script>
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js" integrity="sha384-o5uz97et3bErHvpKfD4Jz4n0JfhJDWABFuF4NP+iEEDxE1VwMWJ19QGR0lqFZnr6" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js" integrity="sha384-D/t0ZMqQW31H3az8ktEiNb39wyKnS82iFY52QPACM+IjKW3jDUhyIgh2PApRqJZs" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" integrity="sha384-vtjasyidUo0kW94K5MXDXntzOJpQgBKXmE7e2Ga4LG0skTTLeBi97eFAXsqewJjw" crossorigin="anonymous"></script>
@@ -14,6 +27,7 @@
 <nav class="nav"><div class="wrap">
   <a class="brand" href="index.html"><span class="sun"></span>SunTally</a>
   <a class="link" href="index.html#how">How it works</a>
+  <a class="link" href="learn/">Learn</a>
   <a class="link" href="index.html#privacy">Privacy</a>
   <a class="link" href="https://github.com/suntally/suntally" target="_blank" rel="noopener">GitHub</a>
   <span class="spacer"></span>

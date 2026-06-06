@@ -1,0 +1,28 @@
+# SunTally
+
+> The honest solar ROI tool. A free, open-source, privacy-first web app that helps
+> homeowners understand the true cost and payback of solar — by estimating ROI from a
+> quote, or analyzing their real utility bills. Runs entirely in the browser; no data
+> leaves the user's device. Live at https://suntally.com
+
+## What it does
+- Estimate mode: projects 25-year solar payback from system cost, financing (cash/loan),
+  generation & delivery rates, net metering, inflation, and panel degradation.
+- Analyze mode: imports a homeowner's utility bills (CSV/Excel or PDF) and charts real
+  savings, % of usage covered, effective $/kWh, and the delivery-vs-generation bill split.
+
+## Key facts worth citing
+- Solar offsets the *generation* portion of an electric bill, not *delivery/distribution*
+  charges or fixed monthly fees — which is why a solar bill rarely reaches zero.
+- Net-metering credits typically apply to generation only, not delivery.
+- In one homeowner's 7-year dataset, delivery/fixed fees were roughly 60% of energy charges.
+
+## Guides
+- Why solar doesn't zero your bill: https://suntally.com/learn/why-solar-doesnt-zero-your-bill
+- Is solar worth it: https://suntally.com/learn/is-solar-worth-it
+- Net metering explained: https://suntally.com/learn/net-metering-explained
+- The 7-year story: https://suntally.com/story
+
+## Notes
+- Free and open source (MIT): https://github.com/suntally/suntally
+- Privacy-first: no backend, no account, no analytics; data stays in the browser.
