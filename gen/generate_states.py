@@ -73,17 +73,17 @@ def ctx(rate, sun):
     return rc, sc
 
 NAV = """<nav class="nav"><div class="wrap">
-  <a class="brand" href="../"><span class="sun"></span>SunTally</a><input type="checkbox" id="navcb" class="nav-cb" hidden/><label for="navcb" class="hamburger" aria-label="Menu">☰</label>
-  <a class="link" href="../#how">How it works</a>
-  <a class="link" href="../learn/">Learn</a>
-  <a class="link" href="../#privacy">Privacy</a>
+  <a class="brand" href="/"><span class="sun"></span>SunTally</a><input type="checkbox" id="navcb" class="nav-cb" hidden/><label for="navcb" class="hamburger" aria-label="Menu">☰</label>
+  <a class="link" href="/#how">How it works</a>
+  <a class="link" href="/learn">Learn</a>
+  <a class="link" href="/#privacy">Privacy</a>
   <a class="link" href="https://github.com/suntally/suntally" target="_blank" rel="noopener">GitHub</a>
   <span class="spacer"></span>
-  <a class="btn gold sm" href="../app">Run the Numbers →</a>
+  <a class="btn gold sm" href="/app">Run the Numbers →</a>
 </div></nav>"""
 FOOT = """<footer><div class="wrap">
   <span>SunTally — free &amp; open source · MIT · your data stays on your device</span>
-  <span><a href="../app">Run the Numbers</a> · <a href="../learn/">Learn</a> · <a href="../#support">Support</a></span>
+  <span><a href="/app">Run the Numbers</a> · <a href="/learn">Learn</a> · <a href="/#support">Support</a></span>
 </div></footer>"""
 
 def head(title, desc, canon, extra_jsonld):
@@ -113,7 +113,7 @@ def state_page(s):
     pb = f"about {round(payback)} years" if payback else "more than 25 years"
     rc, sc = ctx(rate, sun)
     canon = f"{SITE}/solar/{slug}"
-    cta = (f"../app?grossCost={GROSS}&incentives={INCENT}&systemKw={SYS_KW}&productionFactor={sun}"
+    cta = (f"/app?grossCost={GROSS}&incentives={INCENT}&systemKw={SYS_KW}&productionFactor={sun}"
            f"&annualUsageKwh={USAGE}&selfConsumption=50&genRate={gen}&deliveryPerKwh={deliv}"
            f"&fixedMonthly={fixed}&exportRate={export}")
     title = f"Is solar worth it in {name}? (2026 payback estimate) — SunTally"
@@ -138,7 +138,7 @@ def state_page(s):
              "acceptedAnswer": {"@type": "Answer", "text": NEM_LABEL[nem] + ". " + html.unescape(nem_text(name, nem).replace('<em>','').replace('</em>',''))}}]}]}, separators=(",", ":"))
 
     body = f"""<article class="article">
-  <div class="crumbs"><a href="../">Home</a> · <a href="./">Solar by state</a> · {name}</div>
+  <div class="crumbs"><a href="/">Home</a> · <a href="/solar">Solar by state</a> · {name}</div>
   <h1>Is solar worth it in {name}?</h1>
   <p class="lede">Short answer: on illustrative average numbers, a typical 8 kW system bought with cash pays back in <strong>{pb}</strong> in {name} — then keeps saving for the rest of the panels' ~25-year life. But it hinges on <em>your</em> rates, usage, and net-metering terms, so run your own numbers below.</p>
   <p class="meta">Approximate {name} averages (~2026) · not financial advice</p>
@@ -152,7 +152,7 @@ def state_page(s):
   <h2>What drives solar economics in {name}</h2>
   <p>Two things move the needle most: how much you pay for grid power, and how much sun your panels get. {name}'s residential electricity runs around <strong>{round(rate*100)}¢/kWh</strong>, {rc}. And with {sc} (about <strong>{sun:,} kWh per kW</strong> installed each year), an 8 kW system produces roughly <strong>{annual_prod:,.0f} kWh/year</strong>.</p>
   <p>The third factor is net metering. {nem_text(name, nem)}</p>
-  <p>Remember solar offsets the <a href="../learn/why-solar-doesnt-zero-your-bill">generation part of your bill, not delivery and fixed fees</a> — so even a great system in {name} won't take your bill to zero.</p>
+  <p>Remember solar offsets the <a href="/learn/why-solar-doesnt-zero-your-bill">generation part of your bill, not delivery and fixed fees</a> — so even a great system in {name} won't take your bill to zero.</p>
 
   <h2>A typical system, run honestly</h2>
   <p>For an 8 kW system at about $3/W (≈${GROSS:,}), minus the 30% federal tax credit (≈${INCENT:,}), the net cost is roughly <strong>${NET_COST:,}</strong>. On {name}'s averages that returns about <strong>${net25:,.0f} net over 25 years</strong>, with first-year savings near <strong>${yr1:,.0f}</strong>. These are illustrative — your quote, roof, and utility will differ.</p>
@@ -173,8 +173,8 @@ def state_page(s):
   <p class="note" style="margin-top:18px">Figures are approximate {name} averages (~2026) for illustration, drawn from public EIA rate data and NREL production ranges. Net-metering policy changes often. Verify everything against your own bill and current utility tariffs. Not financial advice.</p>
 
   <div class="next-reads">
-    <a class="card learn-card" href="./"><h3>Solar by state →</h3><p>Compare payback in other states.</p></a>
-    <a class="card learn-card" href="../learn/net-metering-explained"><h3>Net metering, explained →</h3><p>What exported solar is really worth.</p></a>
+    <a class="card learn-card" href="/solar"><h3>Solar by state →</h3><p>Compare payback in other states.</p></a>
+    <a class="card learn-card" href="/learn/net-metering-explained"><h3>Net metering, explained →</h3><p>What exported solar is really worth.</p></a>
   </div>
 </article>
 {FOOT}
@@ -184,7 +184,7 @@ def state_page(s):
 def hub_page(states, results):
     canon = f"{SITE}/solar"
     rows = "\n".join(
-        f'<tr><td><a href="{slug}">{html.escape(s["name"])}</a></td><td>{round(s["rate"]*100)}¢</td>'
+        f'<tr><td><a href="/solar/{slug}">{html.escape(s["name"])}</a></td><td>{round(s["rate"]*100)}¢</td>'
         f'<td>{s["sun"]:,}</td><td>{("~"+str(round(pb))+" yrs") if pb else "25+ yrs"}</td>'
         f'<td>{NEM_LABEL[s["nem"]].split(" (")[0]}</td></tr>'
         for s, slug, pb in results)
@@ -203,8 +203,8 @@ def hub_page(states, results):
     <tr><th>State</th><th>Avg rate</th><th>Sun (kWh/kW)</th><th>Cash payback*</th><th>Net metering</th></tr>
     {rows}
   </table></div>
-  <p class="note" style="margin-top:10px">*Illustrative cash-purchase payback for a typical 8 kW system (~${NET_COST:,} after the 30% federal credit) on approximate ~2026 state averages. Your result will differ — <a href="../app">run your own numbers</a>. Sources: EIA (rates), NREL (production), DSIRE/utilities (net metering).</p>
-  <div class="cta-box"><h3>Don't see your exact situation?</h3><p>The calculator works anywhere — enter your quote and bill.</p><a class="btn gold" href="../app">Run the Numbers →</a></div>
+  <p class="note" style="margin-top:10px">*Illustrative cash-purchase payback for a typical 8 kW system (~${NET_COST:,} after the 30% federal credit) on approximate ~2026 state averages. Your result will differ — <a href="/app">run your own numbers</a>. Sources: EIA (rates), NREL (production), DSIRE/utilities (net metering).</p>
+  <div class="cta-box"><h3>Don't see your exact situation?</h3><p>The calculator works anywhere — enter your quote and bill.</p><a class="btn gold" href="/app">Run the Numbers →</a></div>
 </div>
 {FOOT}
 </body></html>"""
