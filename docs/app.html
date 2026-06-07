@@ -526,6 +526,14 @@ function initScrollFades() {
 /* ---------- boot ---------- */
 initExpandButtons();
 initScrollFades();
+// Pre-fill Estimate inputs from URL query params (used by per-state landing pages, e.g. /app?genRate=0.18&...)
+(function prefillFromURL(){
+  const q = new URLSearchParams(location.search);
+  if (![...q.keys()].length) return;
+  ['grossCost','incentives','systemKw','productionFactor','annualProduction','annualUsageKwh','selfConsumption','genRate','deliveryPerKwh','fixedMonthly','exportRate','utilityInflation','degradation','years','loanApr','loanTermYears','downPct']
+    .forEach(id => { if (q.has(id) && $(id)) $(id).value = q.get(id); });
+  if (q.get('finance') === 'loan') { finance = 'loan'; document.querySelectorAll('#finSeg button').forEach(x => x.classList.toggle('on', x.dataset.f === 'loan')); $('loanFields').classList.remove('hide'); }
+})();
 const startTab = location.hash === '#track' ? 'track' : 'estimate';
 showTab(startTab);
 updateRowCount();

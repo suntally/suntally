@@ -1,0 +1,25 @@
+{
+  "_note": "Approximate residential averages (~early 2026) for illustration only. rate = all-in retail $/kWh; sun = production factor (kWh per kW per year); nem = net-metering regime. Sources: EIA (rates), NREL PVWatts ranges (production), DSIRE/utility summaries (net metering). Always verify against your own utility bill and current tariffs.",
+  "states": [
+    {"name": "Arizona", "abbr": "AZ", "rate": 0.16, "sun": 1650, "nem": "netbilling"},
+    {"name": "California", "abbr": "CA", "rate": 0.31, "sun": 1500, "nem": "netbilling"},
+    {"name": "Colorado", "abbr": "CO", "rate": 0.16, "sun": 1500, "nem": "retail"},
+    {"name": "Connecticut", "abbr": "CT", "rate": 0.30, "sun": 1200, "nem": "retail"},
+    {"name": "Florida", "abbr": "FL", "rate": 0.15, "sun": 1400, "nem": "retail"},
+    {"name": "Georgia", "abbr": "GA", "rate": 0.14, "sun": 1350, "nem": "varies"},
+    {"name": "Hawaii", "abbr": "HI", "rate": 0.42, "sun": 1500, "nem": "netbilling"},
+    {"name": "Illinois", "abbr": "IL", "rate": 0.16, "sun": 1200, "nem": "retail"},
+    {"name": "Maryland", "abbr": "MD", "rate": 0.17, "sun": 1300, "nem": "retail"},
+    {"name": "Massachusetts", "abbr": "MA", "rate": 0.31, "sun": 1200, "nem": "retail"},
+    {"name": "Nevada", "abbr": "NV", "rate": 0.16, "sun": 1600, "nem": "netbilling"},
+    {"name": "New Jersey", "abbr": "NJ", "rate": 0.18, "sun": 1250, "nem": "retail"},
+    {"name": "New Mexico", "abbr": "NM", "rate": 0.15, "sun": 1600, "nem": "retail"},
+    {"name": "New York", "abbr": "NY", "rate": 0.24, "sun": 1200, "nem": "retail"},
+    {"name": "North Carolina", "abbr": "NC", "rate": 0.14, "sun": 1350, "nem": "retail"},
+    {"name": "Pennsylvania", "abbr": "PA", "rate": 0.18, "sun": 1200, "nem": "retail"},
+    {"name": "South Carolina", "abbr": "SC", "rate": 0.15, "sun": 1380, "nem": "retail"},
+    {"name": "Texas", "abbr": "TX", "rate": 0.15, "sun": 1450, "nem": "varies"},
+    {"name": "Utah", "abbr": "UT", "rate": 0.11, "sun": 1500, "nem": "netbilling"},
+    {"name": "Virginia", "abbr": "VA", "rate": 0.14, "sun": 1300, "nem": "retail"}
+  ]
+}
