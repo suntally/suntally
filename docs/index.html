@@ -28,14 +28,14 @@
 </head>
 <body>
 <nav class="nav"><div class="wrap">
-  <a class="brand" href="index.html"><span class="sun"></span>SunTally</a>
+  <a class="brand" href="index.html"><span class="sun"></span>SunTally</a><input type="checkbox" id="navcb" class="nav-cb" hidden/><label for="navcb" class="hamburger" aria-label="Menu">☰</label>
   <a class="link" href="#how">How it works</a>
   <a class="link" href="learn/">Learn</a>
   <a class="link" href="#privacy">Privacy</a>
   <a class="link" href="#support">Support</a>
   <a class="link" href="https://github.com/suntally/suntally" target="_blank" rel="noopener">GitHub</a>
   <span class="spacer"></span>
-  <a class="btn gold sm" href="app.html">Open the app →</a>
+  <a class="btn gold sm" href="app.html">Run the Numbers →</a>
 </div></nav>
 
 <!-- HERO -->
@@ -107,13 +107,13 @@
       <h3>Leave a one-time tip</h3>
       <p style="margin-bottom:12px">If this tool was worth it to you, an appropriate one-time donation to keep its development going would be really appreciated.</p>
       <p style="margin-bottom:14px">One way to think about it: paying a solar consultant to break all of this down and analyze it for you might be a <b>~$1,500</b> engagement. If the insight you got here felt worth <b>$50</b>, that's wonderful. If it felt worth <b>$10</b>, that's wonderful too. Pay what the clarity was worth to you.</p>
-      <a class="btn gold sm" href="https://ko-fi.com/suntally" data-donate="kofi" target="_blank" rel="noopener">Leave a tip →</a>
+      <a class="btn gold sm" href="https://ko-fi.com/suntally" data-donate="kofi" target="_blank" rel="noopener">$ Contribute →</a>
     </div>
     <div class="card">
       <div class="ic">🏢</div>
       <h3>For companies</h3>
       <p style="margin-bottom:12px">Want to clone SunTally and put it in front of your own customers? It's open source and runs on the honor system — you're welcome to.</p>
-      <p style="margin-bottom:14px">If your company plans to use it commercially, the builder is happy to explore a simple licensing arrangement via a larger one-time contribution that funds continued development. Reach out and let's talk.</p>
+      <p style="margin-bottom:14px">If your company plans to use it commercially, we can explore a simple licensing arrangement that funds continued development. Reach out and let's talk.</p>
       <a class="btn sm" href="https://github.com/suntally/suntally" data-contact="licensing" target="_blank" rel="noopener">Get in touch →</a>
     </div>
   </div>
@@ -121,18 +121,7 @@
 
 <footer><div class="wrap">
   <span>SunTally — © 2026 · MIT licensed · built by a homeowner who tracked this for 7 years</span>
-  <span><a href="app.html">Open the app</a> · <a href="https://github.com/suntally/suntally" target="_blank" rel="noopener">GitHub</a> · <a href="#support">Support</a></span>
+  <span><a href="app.html">Run the Numbers</a> · <a href="https://github.com/suntally/suntally" target="_blank" rel="noopener">GitHub</a> · <a href="#support">Support</a></span>
 </div></footer>
-
-<!-- Ko-fi floating donate widget (homepage only; the app page stays free of third-party scripts) -->
-<script src="https://storage.ko-fi.com/cdn/scripts/overlay-widget.js"></script>
-<script>
-  kofiWidgetOverlay.draw('suntally', {
-    'type': 'floating-chat',
-    'floating-chat.donateButton.text': 'Support me',
-    'floating-chat.donateButton.background-color': '#323842',
-    'floating-chat.donateButton.text-color': '#fff'
-  });
-</script>
 </body>
 </html>

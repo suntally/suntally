@@ -8,7 +8,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'none'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://cdn.jsdelivr.net https://storage.ko-fi.com https://ko-fi.com; style-src 'self' 'unsafe-inline' https://storage.ko-fi.com https://ko-fi.com; img-src 'self' data: blob: https://storage.ko-fi.com https://ko-fi.com; font-src 'self' data: https://storage.ko-fi.com; worker-src 'self' blob:; child-src 'self' blob:; frame-src 'self' https://ko-fi.com https://storage.ko-fi.com; connect-src 'self' https://cdn.jsdelivr.net https://unpkg.com https://ko-fi.com https://storage.ko-fi.com blob: data:; manifest-src 'self'"
+          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'none'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; worker-src 'self' blob:; child-src 'self' blob:; connect-src 'self' https://cdn.jsdelivr.net https://unpkg.com blob: data:; manifest-src 'self'"
         },
         { "key": "X-Content-Type-Options", "value": "nosniff" },
         { "key": "X-Frame-Options", "value": "DENY" },

@@ -40,11 +40,9 @@ You don't have to take our word for it:
 
 ## No tracking
 
-No Google Analytics, no pixels, no tracking cookies. The **app** (where you enter and
-upload data) loads no third-party scripts beyond the open-source libraries above. The
-marketing **homepage** additionally shows a Ko-fi "Support" donate button — a standard
-widget that only opens a tip page and never has access to your bills or numbers (they're
-only in the app).
+No Google Analytics, no pixels, no tracking cookies, and no third-party scripts beyond the
+open-source libraries above. The "Contribute" button is a plain link to a Ko-fi tip page —
+it loads nothing and never has access to your data.
 
 ## Disclaimer
 
