@@ -262,3 +262,8 @@ table.dt tr:hover td{background:#0f1726}
   .kpis{gap:9px}
   .kpi .kv{font-size:20px}
 }
+
+/* header brand: a little more breathing room before the sun icon */
+.brand{padding-left:8px}
+/* two-line eyebrow pill (no icon) */
+.eyebrow.eyebrow-stack{display:inline-block;text-align:center;line-height:1.55}
